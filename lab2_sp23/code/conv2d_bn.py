@@ -22,28 +22,17 @@ def conv2d_bn(x,
     ##############################################################
 
     ## TO DO Step1 : Apply a Conv 2D Keras Layer with all given parameters
-    # Your code goes here
-
-
-
-
+    x = Conv2D(filters, kernel_size, strides, padding, activation, use_bias, name=name)(x)
 
     if not use_bias:
-
         bn_name = generate_layer_name('BatchNorm', prefix=name)
         ## TO DO Step 2 : Apply a Batch Normalization Keras Layer with all given parameters
-        # Your code goes here
-
-
-
+        x = BatchNormalization(axis=bn_axis, momentum=0.995, epsilon=0.001, scale=False, name=bn_name)(x)
 
     if activation is not None:
         ac_name = generate_layer_name('Activation', prefix=name)
         ## TO DO Step 3 : Apply an Activation Keras Layer with all given parameters
-        # Your code goes here
-
-
-
+        x = Activation(activation, name=ac_name)
 
     ###############################################################
     return x
