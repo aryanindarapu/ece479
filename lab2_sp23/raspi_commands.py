@@ -1,5 +1,5 @@
-import tensorflow as tf
-from tensorflow import keras
+import tflite_runtime.interpreter as tflite
+from tflite import keras
 import numpy as np
 
 fashion_mnist = keras.datasets.fashion_mnist
@@ -12,7 +12,7 @@ test_images = test_images / 255.0
 test_images = test_images[..., np.newaxis]
 
 # Load the TFLite model and allocate tensors.
-interpreter = tf.lite.Interpreter(model_path="my_model.tflite")
+interpreter = tflite.Interpreter(model_path="my_model.tflite")
 interpreter.allocate_tensors()
 
 # Get input and output tensors.
