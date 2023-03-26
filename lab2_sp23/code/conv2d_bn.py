@@ -32,7 +32,7 @@ def conv2d_bn(x,
     if activation is not None:
         ac_name = generate_layer_name('Activation', prefix=name)
         ## TO DO Step 3 : Apply an Activation Keras Layer with all given parameters
-        x = Activation(activation, name=ac_name)
+        x = Activation(activation, name=ac_name)(x)
 
     ###############################################################
     return x

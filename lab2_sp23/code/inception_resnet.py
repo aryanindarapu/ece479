@@ -17,7 +17,7 @@ def InceptionResNetV1Norm(input_shape=(160, 160, 3),
     # DO NOT TOUCH
     inputs = Input(shape=input_shape)
     # Example of how to use conv2d_bn
-    # Note: this is also part of the netowrk, do not delete it
+    # Note: this is also part of the network, do not delete it
     x = conv2d_bn(inputs,
                   32,
                   3,
@@ -29,8 +29,11 @@ def InceptionResNetV1Norm(input_shape=(160, 160, 3),
     # Preprocess inputs by MaxPooling2D
     ## TO DO Step 1 : Finish the implementation for preprocessing with given parameters
     # Please name all layers properly to make it easy for your debugging
-    # Your code goes here
-
+    x = conv2d_bn(x , filters=64, kernel_size=(3,3), name="conv_func_2")
+    x = MaxPooling2D(pool_size=2, strides=2, name="max_pool_layer_1")(x)
+    x = conv2d_bn(x, filters=80, kernel_size=(1,1), padding='valid', name="conv_func_3")
+    x = conv2d_bn(x, filters=192, kernel_size=(3,3), padding='valid', name="conv_func_4")
+    x = conv2d_bn(x, filters=256, kernel_size=(3,3), strides=2, padding='valid', name="conv_func_5")
 
 
 
@@ -42,7 +45,7 @@ def InceptionResNetV1Norm(input_shape=(160, 160, 3),
     ## TO DO Step 2 : Finish the implementation for Inception-A block with given parameters
     # Please name all blocks properly to make it easy for your debugging
     # Hint : Use for loop to instantiate multiples reception blocks
-    # Your code goes here
+    for block_idx in range(1,6): x = resnet_block(x, scale=0.17, block_idx=block_idx, block_type="Inception_block_a")
 
 
 
@@ -78,7 +81,7 @@ def InceptionResNetV1Norm(input_shape=(160, 160, 3),
     ## TO DO Step 3 : Finish the implementation for Inception-B block with given parameters
     # Please name all blocks properly to make it easy for your debugging
     # Hint : Use for loop to instantiate multiples reception blocks
-    # Your code goes here
+    for block_idx in range(1,11): x = resnet_block(x, scale=0.1, block_idx=block_idx, block_type="Inception_block_b")
 
 
 
@@ -121,7 +124,7 @@ def InceptionResNetV1Norm(input_shape=(160, 160, 3),
     ## TO DO Step 4 : Finish the implementation for Inception-B block with given parameters
     # Please name all blocks properly to make it easy for your debugging
     # Hint : Use for loop to instantiate multiples reception blocks
-    # Your code goes here
+    for block_idx in range(1,6): x = resnet_block(x, scale=0.2, block_idx=block_idx, block_type="Inception_block_c")
 
 
 
@@ -141,8 +144,8 @@ def InceptionResNetV1Norm(input_shape=(160, 160, 3),
     # Classification block
     ## TO DO Step 5 : Apply Global Average pooling + Dropout layers
     # Please name all blocks properly to make it easy for your debugging
-    x = # Your code goes here (do not modify the variable name assigned to)
-    x = # Your code goes here (do not modify the variable name assigned to)
+    x = GlobalAveragePooling2D()(x)
+    x = Dropout(dropout_keep_prob)(x)
 
 
     ## DO NOT TOUCH

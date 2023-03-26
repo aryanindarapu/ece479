@@ -1,5 +1,4 @@
 import tflite_runtime.interpreter as tflite
-from tflite import keras
 import numpy as np
 
 fashion_mnist = keras.datasets.fashion_mnist
