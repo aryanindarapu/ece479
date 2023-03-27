@@ -1,14 +1,15 @@
 import cv2
-import picamera
+from picamera2 import Picamera2
 import numpy as np
 from mtcnn.mtcnn import MTCNN
+import io
 
 def capture_image():
     # Instrctor note: this can be directly taken from the PiCamera documentation
     # Create the in-memory stream
     stream = io.BytesIO()
-    with picamera.PiCamera() as camera:
-        camera.capture(stream, format='jpeg')
+    with PiCamera2() as camera:
+        camera.capture_file(stream, format='jpeg')
         
     # Construct a numpy array from the stream
     data = np.frombuffer(stream.getvalue(), dtype=np.uint8)
@@ -55,8 +56,6 @@ def pre_process(face, required_size=(160, 160)):
     return ret
 
 def run_model(model, face):
-# students will need to fill in the following function
-    #TODO
     # Get input and output tensors.
     input_details = model.get_input_details()
     output_details = model.get_output_details()
