@@ -1,5 +1,6 @@
 import tflite_runtime.interpreter as tflite
 import numpy as np
+import time
 
 test_images = np.load('test_images.npy')
 test_labels = np.load('test_labels.npy')
@@ -9,16 +10,18 @@ test_labels = np.load('test_labels.npy')
 
 # reshape data
 test_images = test_images[..., np.newaxis]
-test_images = test_images.astype(np.float32)
+test_images = test_images.astype(np.uint8)
 
 # Load the TFLite model and allocate tensors.
-interpreter = tflite.Interpreter(model_path="my_model_dynamic_quant.tflite")
+interpreter = tflite.Interpreter(model_path="my_model_full_int_quant.tflite")
 interpreter.allocate_tensors()
 
 # Get input and output tensors.
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 input_shape = input_details[0]['shape']
+
+start_time = time.time()
 
 num_correct = 0
 for i in range(len(test_images)):
@@ -32,5 +35,7 @@ for i in range(len(test_images)):
     # Use `tensor()` in order to get a pointer to the tensor.
     output_data = interpreter.get_tensor(output_details[0]['index'])
     if np.argmax(output_data) == test_labels[i]: num_correct += 1
-    
-print(f"Accuracy of this model is: {num_correct/len(test_images)}")
+
+print(f"This code ran in {time.time() - start_time} seconds.")
+print(f"Accuracy of this model is: {num_correct/len(test_images)}.")
+

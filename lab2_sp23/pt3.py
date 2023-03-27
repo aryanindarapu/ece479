@@ -12,7 +12,7 @@ def capture_image_live():
     # Create the in-memory stream
     stream = io.BytesIO()
     picam2.capture_file(stream, format='jpeg')
-    picam2.capture_file("face.jpg")
+    picam2.capture_file("./pt3_images/face.jpg")
         
     # Construct a numpy array from the stream
     data = np.frombuffer(stream.getvalue(), dtype=np.uint8)
@@ -53,14 +53,19 @@ def detect_and_crop(mtcnn, image):
     return cropped_image, (x,y,width,height)
 
 # function provided for the students to draw the rectangle
+import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
+import datetime
+
+matplotlib.use('Agg')
 def show_bounding_box(image, bounding_box):
     x1, y1, w, h = bounding_box
     fig, ax = plt.subplots(1,1)
     ax.imshow(image)
     ax.add_patch(Rectangle((x1, y1), w, h, linewidth=1, edgecolor='r', facecolor='none'))
-    plt.show()
+    # plt.show()
+    plt.savefig(f'./pt3_images/face_box_{datetime.now()}.jpg')
     return
 
 def pre_process(face, required_size=(160, 160)):
@@ -113,7 +118,7 @@ mtcnn = MTCNN()
 image = capture_image_live()
 # 2. Detect and Crop
 cropped_image, dim = detect_and_crop(mtcnn, image)
-show_bounding_box(cropped_image, dim)
+show_bounding_box(image, dim)
 # 3. Preprocess
 tfl_file = "./inception_resnet_model.tflite"
 interpreter = tf.lite.Interpreter(model_path=tfl_file)
@@ -124,9 +129,9 @@ face = pre_process(cropped_image)
 output_data = run_model(interpreter, face)
 
 # process the image of the second person
-image2 = read_image("reynolds.jpeg")
+image2 = read_image("./pt3_images/reynolds.jpeg")
 cropped_image2, dim2 = detect_and_crop(mtcnn, image2)
-show_bounding_box(cropped_image, dim)
+show_bounding_box(image2, dim2)
 #preprocess the face
 face2 = pre_process(cropped_image2)
 # 4. Run the model
