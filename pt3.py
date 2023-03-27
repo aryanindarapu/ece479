@@ -6,10 +6,11 @@ import io
 import tensorflow as tf
 
 def capture_image():
-    # Instrctor note: this can be directly taken from the PiCamera documentation
+    picam2 = Picamera2()
+    picam2.start()
+    
     # Create the in-memory stream
     stream = io.BytesIO()
-    picam2 = Picamera2()
     picam2.capture_file(stream, format='jpeg')
         
     # Construct a numpy array from the stream
