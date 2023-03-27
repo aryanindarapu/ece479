@@ -19,18 +19,20 @@ test_images = test_images.astype(np.uint8)
 interpreter = edgetpu.make_interpreter("my_model_full_int_quant.tflite")
 interpreter.allocate_tensors()
 
-start_time = time.time()
-
 num_correct = 0
+total_time = 0
 for i in range(len(test_images)):
     # Test the model on random input data.
     common.set_input(interpreter, test_images[i].reshape((1, 28, 28, 1)))
+    
     # Run the model
+    start_time = time.time()
     interpreter.invoke()
+    total_time += time.time() - start_time
 
     classes = classify.get_classes(interpreter, top_k=1)
     if classes[0].id == test_labels[i]: num_correct += 1
 
-print(f"This code ran in {time.time() - start_time} seconds.")
+print(f"This code ran in {total_time/len(test_images)} seconds.")
 print(f"Accuracy of this model is: {num_correct/len(test_images)}.")
 
