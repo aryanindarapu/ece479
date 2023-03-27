@@ -79,10 +79,11 @@ mtcnn = MTCNN()
 image = capture_image()
 cropped_image, dim = detect_and_crop(mtcnn, image)
 
-tfl_file = "inception_lite.tflite" #change this to the inception model
+tfl_file = "inception_resnet_model.tflite" #change this to the inception model
 interpreter = tf.lite.Interpreter(model_path=tfl_file)
 interpreter.allocate_tensors()
 #preprocess the face
 face = pre_process(cropped_image)
 #run the model with the above funtion
 output_data = run_model(interpreter, face)
+print(output_data)
