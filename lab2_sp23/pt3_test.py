@@ -109,7 +109,7 @@ def read_image(file):
 # 1. Read the image
 mtcnn = MTCNN()
 #image = capture_image()
-image = read_image("./reynolds1.jpeg")
+image = read_image("./cain1.jpg")
 # 2. Detect and Crop
 cropped_image, dim = detect_and_crop(mtcnn, image)
 # 3. Preprocess
@@ -122,7 +122,7 @@ face = pre_process(cropped_image)
 output_data = run_model(interpreter, face)
 
 # process the image of the second person
-image2 = read_image("./reynolds1.jpeg")
+image2 = read_image("./cain2.jpg")
 cropped_image2, dim2 = detect_and_crop(mtcnn, image2)
 #preprocess the face
 face2 = pre_process(cropped_image2)
