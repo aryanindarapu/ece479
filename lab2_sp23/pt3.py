@@ -29,7 +29,7 @@ def detect_and_crop(mtcnn, image):
     detection = mtcnn.detect_faces(image)[0]
     
     # extract the bounding box
-    x, y, width, height = detection[0]['box']
+    x, y, width, height = detection['box']
     x = int(x*0.9)
     y = int(y*0.9)
     width = int(width*1.2)
