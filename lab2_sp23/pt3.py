@@ -12,7 +12,7 @@ def capture_image_live():
     # Create the in-memory stream
     stream = io.BytesIO()
     picam2.capture_file(stream, format='jpeg')
-    picam2.caputure_file("face.jpg")
+    picam2.capture_file("face.jpg")
         
     # Construct a numpy array from the stream
     data = np.frombuffer(stream.getvalue(), dtype=np.uint8)
