@@ -9,8 +9,8 @@ def capture_image():
     # Instrctor note: this can be directly taken from the PiCamera documentation
     # Create the in-memory stream
     stream = io.BytesIO()
-    with PiCamera2() as camera:
-        camera.capture_file(stream, format='jpeg')
+    picam2 = Picamera2()
+    picam2.capture_file(stream, format='jpeg')
         
     # Construct a numpy array from the stream
     data = np.frombuffer(stream.getvalue(), dtype=np.uint8)
