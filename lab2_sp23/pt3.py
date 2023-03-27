@@ -126,7 +126,7 @@ output_data = run_model(interpreter, face)
 # process the image of the second person
 image2 = read_image("reynolds.jpeg")
 cropped_image2, dim2 = detect_and_crop(mtcnn, image2)
-show_bounding_box(cropped_image, dim)
+show_bounding_box(cropped_image2, dim2)
 #preprocess the face
 face2 = pre_process(cropped_image2)
 # 4. Run the model
