@@ -22,7 +22,7 @@ def conv2d_bn(x,
     ##############################################################
 
     ## TO DO Step1 : Apply a Conv 2D Keras Layer with all given parameters
-    x = Conv2D(filters=filters, kernel_size=kernel_size, strides=strides, padding=padding, activation=activation, use_bias=use_bias, name=name)(x)
+    x = Conv2D(filters=filters, kernel_size=kernel_size, strides=strides, padding=padding, use_bias=use_bias, name=name)(x)
 
     if not use_bias:
         bn_name = generate_layer_name('BatchNorm', prefix=name)
