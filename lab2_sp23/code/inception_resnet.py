@@ -146,7 +146,7 @@ def InceptionResNetV1Norm(input_shape=(160, 160, 3),
     ## TO DO Step 5 : Apply Global Average pooling + Dropout layers
     # Please name all blocks properly to make it easy for your debugging
     x = GlobalAveragePooling2D()(x)
-    x = Dropout(dropout_keep_prob)(x)
+    x = Dropout(1 - dropout_keep_prob)(x)
 
 
     ## DO NOT TOUCH
