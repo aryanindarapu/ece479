@@ -29,7 +29,8 @@ def InceptionResNetV1Norm(input_shape=(160, 160, 3),
     # Preprocess inputs by MaxPooling2D
     ## TO DO Step 1 : Finish the implementation for preprocessing with given parameters
     # Please name all layers properly to make it easy for your debugging
-    x = conv2d_bn(x , filters=64, kernel_size=(3,3), name="conv_func_2")
+    x = conv2d_bn(x, filters=32, kernel_size=(3,3), padding='valid', name='conv_func_1')
+    x = conv2d_bn(x, filters=64, kernel_size=(3,3), name="conv_func_2")
     x = MaxPooling2D(pool_size=2, strides=2, name="max_pool_layer_1")(x)
     x = conv2d_bn(x, filters=80, kernel_size=(1,1), padding='valid', name="conv_func_3")
     x = conv2d_bn(x, filters=192, kernel_size=(3,3), padding='valid', name="conv_func_4")
