@@ -92,19 +92,33 @@ def read_image(file):
 # #run the model with the above funtion
 # output_data = run_model(interpreter, face)
 
+# process the second image of the first person
+
 # 1. Read the image
 mtcnn = MTCNN()
 #image = capture_image()
 image = read_image("reynolds.jpg")
 # 2. Detect and Crop
 cropped_image, dim = detect_and_crop(mtcnn, image)
-
-tfl_file = "inception_resnet_model.tflite" #change this to the inception model
+# 3. Proprocess
+tfl_file = "./inception_lite"
 interpreter = tf.lite.Interpreter(model_path=tfl_file)
 interpreter.allocate_tensors()
 #preprocess the face
 face = pre_process(cropped_image)
-#run the model with the above funtion
-output_data = run_model(interpreter, face)[0]
-print(output_data)
-print(np.argmax(output_data), output_data[np.argmax(output_data)])
+# 4. Run the model
+output_data = run_model(interpreter, face)
+
+# process the image of the second person
+image2 = read_image("reynolds2.jpg")
+cropped_image2, dim2 = detect_and_crop(mtcnn, image2)
+#preprocess the face
+face2 = pre_process(cropped_image2)
+# 4. Run the model
+output_data2 = run_model(interpreter, face2)
+
+
+# Do the comparison of the distance
+# print(output_data[0])
+# print(output_data2[0])
+print(np.linalg.norm(output_data[0] - output_data2[0]))
