@@ -62,7 +62,7 @@ def run_model(model, face):
 
     # Test the model on random input data.
     input_shape = input_details[0]['shape']
-    model.set_tensor(input_details[0]['index'], face)
+    model.set_tensor(input_details[0]['index'], face.reshape(input_shape))
     
     model.invoke()
 
@@ -75,7 +75,7 @@ def run_model(model, face):
 
 mtcnn = MTCNN()
 image = capture_image()
-cropped_image = detect_and_crop(mtcnn, image)
+cropped_image, dim = detect_and_crop(mtcnn, image)
 
 tfl_file = "inception_lite.tflite" #change this to the inception model
 interpreter = tf.lite.Interpreter(model_path=tfl_file)
