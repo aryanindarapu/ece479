@@ -5,16 +5,29 @@ from mtcnn.mtcnn import MTCNN
 import io
 import tensorflow as tf
 
-def capture_image():
+def capture_image_live():
     picam2 = Picamera2()
     picam2.start()
     
     # Create the in-memory stream
     stream = io.BytesIO()
     picam2.capture_file(stream, format='jpeg')
+    picam2.caputure_file("face.jpg")
         
     # Construct a numpy array from the stream
     data = np.frombuffer(stream.getvalue(), dtype=np.uint8)
+    
+    # "Decode" the image from the array, preserving colour
+    image = cv2.imdecode(data, 1)
+    
+    # OpenCV returns an array with data in BGR order. 
+    # The following code invert the order of the last dimension.
+    image = image[:, :, ::-1]
+    return image
+
+def capture_image(face_file):
+    # Construct a numpy array from the stream
+    data = read_image(face_file)
     
     # "Decode" the image from the array, preserving colour
     image = cv2.imdecode(data, 1)
@@ -97,11 +110,11 @@ def read_image(file):
 # 1. Read the image
 mtcnn = MTCNN()
 #image = capture_image()
-image = read_image("reynolds.jpg")
+image = capture_image_live()
 # 2. Detect and Crop
 cropped_image, dim = detect_and_crop(mtcnn, image)
-# 3. Proprocess
-tfl_file = "./inception_lite"
+# 3. Preprocess
+tfl_file = "./inception_resnet_model.tflite"
 interpreter = tf.lite.Interpreter(model_path=tfl_file)
 interpreter.allocate_tensors()
 #preprocess the face
@@ -110,7 +123,7 @@ face = pre_process(cropped_image)
 output_data = run_model(interpreter, face)
 
 # process the image of the second person
-image2 = read_image("reynolds2.jpg")
+image2 = read_image("reynolds.jpeg")
 cropped_image2, dim2 = detect_and_crop(mtcnn, image2)
 #preprocess the face
 face2 = pre_process(cropped_image2)

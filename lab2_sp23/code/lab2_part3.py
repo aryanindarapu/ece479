@@ -20,3 +20,10 @@ print(len(model.layers))
 model.load_weights("./code/weights/inception_keras_weights.h5")  # Has been translated from checkpoint
 
 model.save('inception_resnet_model')
+
+converter = tf.lite.TFLiteConverter.from_saved_model('inception_resnet_model') # path to the SavedModel directory
+tflite_model = converter.convert()
+
+# Save the model.
+with open('../inception_resnet_model.tflite', 'wb') as f:
+  f.write(tflite_model)
