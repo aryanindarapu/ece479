@@ -3,6 +3,7 @@ from picamera2 import Picamera2
 import numpy as np
 from mtcnn.mtcnn import MTCNN
 import io
+import tensorflow as tf
 
 def capture_image():
     # Instrctor note: this can be directly taken from the PiCamera documentation
