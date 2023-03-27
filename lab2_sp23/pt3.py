@@ -85,5 +85,6 @@ interpreter.allocate_tensors()
 #preprocess the face
 face = pre_process(cropped_image)
 #run the model with the above funtion
-output_data = run_model(interpreter, face)
+output_data = run_model(interpreter, face)[0]
 print(output_data)
+print(np.argmax(output_data), output_data[np.argmax(output_data)])
