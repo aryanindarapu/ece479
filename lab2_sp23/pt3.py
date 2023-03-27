@@ -113,6 +113,7 @@ mtcnn = MTCNN()
 image = capture_image_live()
 # 2. Detect and Crop
 cropped_image, dim = detect_and_crop(mtcnn, image)
+show_bounding_box(cropped_image, dim)
 # 3. Preprocess
 tfl_file = "./inception_resnet_model.tflite"
 interpreter = tf.lite.Interpreter(model_path=tfl_file)
@@ -125,6 +126,7 @@ output_data = run_model(interpreter, face)
 # process the image of the second person
 image2 = read_image("reynolds.jpeg")
 cropped_image2, dim2 = detect_and_crop(mtcnn, image2)
+show_bounding_box(cropped_image, dim)
 #preprocess the face
 face2 = pre_process(cropped_image2)
 # 4. Run the model
