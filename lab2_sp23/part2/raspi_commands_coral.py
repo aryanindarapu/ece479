@@ -21,18 +21,18 @@ interpreter.allocate_tensors()
 
 num_correct = 0
 total_time = 0
+start_time = time.time()
 for i in range(len(test_images)):
     # Test the model on random input data.
     common.set_input(interpreter, test_images[i].reshape((1, 28, 28, 1)))
     
     # Run the model
-    start_time = time.time()
     interpreter.invoke()
-    total_time += time.time() - start_time
 
     classes = classify.get_classes(interpreter, top_k=1)
     if classes[0].id == test_labels[i]: num_correct += 1
 
-print(f"This code ran in {total_time/len(test_images)} seconds.")
+total_time += time.time() - start_time
+print(f"This code ran in {total_time} seconds.")
 print(f"Accuracy of this model is: {num_correct/len(test_images)}.")
 
