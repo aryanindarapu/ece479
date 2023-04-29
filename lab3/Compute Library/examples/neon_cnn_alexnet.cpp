@@ -24,14 +24,11 @@
 #include "arm_compute/runtime/NEON/NEFunctions.h"
 
 #include "arm_compute/core/Types.h"
-
 #include "arm_compute/runtime/Allocator.h"
 #include "arm_compute/runtime/BlobLifetimeManager.h"
 #include "arm_compute/runtime/MemoryManagerOnDemand.h"
 #include "arm_compute/runtime/PoolManager.h"
-
 #include "utils/Utils.h"
-#include "utils/GraphUtils.h"
 
 using namespace arm_compute;
 using namespace utils;
@@ -81,8 +78,13 @@ public:
         const TensorShape weights_shape_conv0(kernel_x_conv0, kernel_y_conv0, src_shape.z(), ofm_conv0);
         const TensorShape biases_shape_conv0(weights_shape_conv0[3]);
         const TensorShape out_shape_conv0(src_shape.x(), src_shape.y(), weights_shape_conv0[3]);
+<<<<<<< HEAD
         weights0.allocator()->init(std::make_unique<graph_utils::NumPyBinLoader>("../assets_alexnet/cnn_data/alexnet_model/conv0_w.npy", DataLayout::NCHW));
         weights0.allocator()->init(graph_utils::get_weights_accessor("../assets_alexnet/cnn_data/alexnet_model/conv0_w.npy"));
+=======
+
+        weights0.allocator()->init(get_weights_accessor("../assets_alexnet/cnn_data/alexnet_model/conv0_w.npy"));
+>>>>>>> 7d30659 (added compute library)
         biases0.allocator()->init(TensorInfo(biases_shape_conv0, 1, DataType::F32));
         out_conv0.allocator()->init(TensorInfo(out_shape_conv0, 1, DataType::F32));
 
