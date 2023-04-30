@@ -55,9 +55,9 @@ public:
         // The weights and biases tensors should be initialized with the values inferred with the training
 
         // Set memory manager where allowed to manage internal memory requirements
-        conv0   = std::make_unique<NEConvolutionLayer>(mm_layers);
         conv1   = std::make_unique<NEConvolutionLayer>(mm_layers);
-        fc0     = std::make_unique<NEFullyConnectedLayer>(mm_layers);
+        conv2   = std::make_unique<NEConvolutionLayer>(mm_layers);
+        fc3     = std::make_unique<NEFullyConnectedLayer>(mm_layers);
         softmax = std::make_unique<NESoftmaxLayer>(mm_layers);
 
         /* [Initialize tensors] */
@@ -71,73 +71,73 @@ public:
         src.allocator()->init(TensorInfo(src_shape, 1, DataType::F32));
 
         // Initialize tensors of conv0
-        constexpr unsigned int kernel_x_conv0 = 5;
-        constexpr unsigned int kernel_y_conv0 = 5;
-        constexpr unsigned int ofm_conv0      = 8;
+        constexpr unsigned int kernel_x_conv1 = 5;
+        constexpr unsigned int kernel_y_conv1 = 5;
+        constexpr unsigned int ofm_conv1      = 8;
 
-        NPYLoader npy0;
-        NPYLoader npy1;
+        NPYLoader np_weights1;
+        NPYLoader np_biases1;
 
-        const TensorShape weights_shape_conv0(kernel_x_conv0, kernel_y_conv0, src_shape.z(), ofm_conv0);
-        const TensorShape biases_shape_conv0(weights_shape_conv0[3]);
-        const TensorShape out_shape_conv0(src_shape.x(), src_shape.y(), weights_shape_conv0[3]);
-        weights0.allocator()->init(TensorInfo(weights_shape_conv0, 1, DataType::F32));
-        biases0.allocator()->init(TensorInfo(biases_shape_conv0, 1, DataType::F32));
-        out_conv0.allocator()->init(TensorInfo(out_shape_conv0, 1, DataType::F32));
-
-        npy0.open("../assets_alexnet/cnn_data/alexnet_model/conv1_w.npy");
-        npy0.init_tensor(weights0, DataType::F32);
-        npy1.open("../assets_alexnet/cnn_data/alexnet_model/conv1_b.npy");
-        npy1.init_tensor(biases0, DataType::F32);
-
-        // Initialize tensor of act0
-        out_act0.allocator()->init(TensorInfo(out_shape_conv0, 1, DataType::F32));
-
-        // Initialize tensor of pool0
-        TensorShape out_shape_pool0 = out_shape_conv0;
-        out_shape_pool0.set(0, out_shape_pool0.x() / 2);
-        out_shape_pool0.set(1, out_shape_pool0.y() / 2);
-        out_pool0.allocator()->init(TensorInfo(out_shape_pool0, 1, DataType::F32));
-
-        // Initialize tensors of conv1
-        constexpr unsigned int kernel_x_conv1 = 3;
-        constexpr unsigned int kernel_y_conv1 = 3;
-        constexpr unsigned int ofm_conv1      = 16;
-
-        const TensorShape weights_shape_conv1(kernel_x_conv1, kernel_y_conv1, out_shape_pool0.z(), ofm_conv1);
-
+        const TensorShape weights_shape_conv1(kernel_x_conv1, kernel_y_conv1, src_shape.z(), ofm_conv1);
         const TensorShape biases_shape_conv1(weights_shape_conv1[3]);
-        const TensorShape out_shape_conv1(out_shape_pool0.x(), out_shape_pool0.y(), weights_shape_conv1[3]);
-
+        const TensorShape out_shape_conv1(src_shape.x(), src_shape.y(), weights_shape_conv1[3]);
         weights1.allocator()->init(TensorInfo(weights_shape_conv1, 1, DataType::F32));
         biases1.allocator()->init(TensorInfo(biases_shape_conv1, 1, DataType::F32));
         out_conv1.allocator()->init(TensorInfo(out_shape_conv1, 1, DataType::F32));
 
-        // Initialize tensor of act1
+        np_weights1.open("../assets_alexnet/cnn_data/alexnet_model/conv1_w.npy");
+        np_weights1.init_tensor(weights1, DataType::F32);
+        np_biases1.open("../assets_alexnet/cnn_data/alexnet_model/conv1_b.npy");
+        np_biases1.init_tensor(biases1, DataType::F32);
+
+        // Initialize tensor of act0
         out_act1.allocator()->init(TensorInfo(out_shape_conv1, 1, DataType::F32));
 
-        // Initialize tensor of pool1
+        // Initialize tensor of pool0
         TensorShape out_shape_pool1 = out_shape_conv1;
         out_shape_pool1.set(0, out_shape_pool1.x() / 2);
         out_shape_pool1.set(1, out_shape_pool1.y() / 2);
         out_pool1.allocator()->init(TensorInfo(out_shape_pool1, 1, DataType::F32));
 
+        // Initialize tensors of conv1
+        constexpr unsigned int kernel_x_conv2 = 3;
+        constexpr unsigned int kernel_y_conv2 = 3;
+        constexpr unsigned int ofm_conv2      = 16;
+
+        const TensorShape weights_shape_conv2(kernel_x_conv2, kernel_y_conv2, out_shape_pool1.z(), ofm_conv1);
+
+        const TensorShape biases_shape_conv2(weights_shape_conv2[3]);
+        const TensorShape out_shape_conv2(out_shape_pool1.x(), out_shape_pool1.y(), weights_shape_conv2[3]);
+
+        weights2.allocator()->init(TensorInfo(weights_shape_conv2, 1, DataType::F32));
+        biases2.allocator()->init(TensorInfo(biases_shape_conv2, 1, DataType::F32));
+        out_conv2.allocator()->init(TensorInfo(out_shape_conv2, 1, DataType::F32));
+
+        // Initialize tensor of act1
+        out_act2.allocator()->init(TensorInfo(out_shape_conv2, 1, DataType::F32));
+
+        // Initialize tensor of pool1
+        TensorShape out_shape_pool2 = out_shape_conv2;
+        out_shape_pool2.set(0, out_shape_pool2.x() / 2);
+        out_shape_pool2.set(1, out_shape_pool2.y() / 2);
+        out_pool2.allocator()->init(TensorInfo(out_shape_pool2, 1, DataType::F32));
+
         // Initialize tensor of fc0
         constexpr unsigned int num_labels = 128;
 
-        const TensorShape weights_shape_fc0(out_shape_pool1.x() * out_shape_pool1.y() * out_shape_pool1.z(), num_labels);
-        const TensorShape biases_shape_fc0(num_labels);
-        const TensorShape out_shape_fc0(num_labels);
+        const TensorShape weights_shape_fc3(out_shape_pool2.x() * out_shape_pool2.y() * out_shape_pool2.z(), num_labels);
+        const TensorShape biases_shape_fc3(num_labels);
+        const TensorShape out_shape_fc3(num_labels);
 
-        weights2.allocator()->init(TensorInfo(weights_shape_fc0, 1, DataType::F32));
-        biases2.allocator()->init(TensorInfo(biases_shape_fc0, 1, DataType::F32));
-        out_fc0.allocator()->init(TensorInfo(out_shape_fc0, 1, DataType::F32));
+        weights3.allocator()->init(TensorInfo(weights_shape_fc3, 1, DataType::F32));
+        biases3.allocator()->init(TensorInfo(biases_shape_fc3, 1, DataType::F32));
+        out_fc3.allocator()->init(TensorInfo(out_shape_fc3, 1, DataType::F32));
 
         // Initialize tensor of act2
-        out_act2.allocator()->init(TensorInfo(out_shape_fc0, 1, DataType::F32));
+        out_act3.allocator()->init(TensorInfo(out_shape_fc3, 1, DataType::F32));
 
         // Initialize tensor of softmax
-        const TensorShape out_shape_softmax(out_shape_fc0.x());
+        const TensorShape out_shape_softmax(out_shape_fc3.x());
         out_softmax.allocator()->init(TensorInfo(out_shape_softmax, 1, DataType::F32));
 
         constexpr auto data_layout = DataLayout::NCHW;
@@ -147,31 +147,31 @@ public:
         /* [Configure functions] */
 
         // in:32x32x1: 5x5 convolution, 8 output features maps (OFM)
-        conv0->configure(&src, &weights0, &biases0, &out_conv0, PadStrideInfo(1 /* stride_x */, 1 /* stride_y */, 2 /* pad_x */, 2 /* pad_y */));
+        conv1->configure(&src, &weights1, &biases1, &out_conv1, PadStrideInfo(1 /* stride_x */, 1 /* stride_y */, 2 /* pad_x */, 2 /* pad_y */));
 
         // in:32x32x8, out:32x32x8, Activation function: relu
-        act0.configure(&out_conv0, &out_act0, ActivationLayerInfo(ActivationLayerInfo::ActivationFunction::RELU));
-
-        // in:32x32x8, out:16x16x8 (2x2 pooling), Pool type function: Max
-        pool0.configure(&out_act0, &out_pool0, PoolingLayerInfo(PoolingType::MAX, 2, data_layout, PadStrideInfo(2 /* stride_x */, 2 /* stride_y */)));
-
-        // in:16x16x8: 3x3 convolution, 16 output features maps (OFM)
-        conv1->configure(&out_pool0, &weights1, &biases1, &out_conv1, PadStrideInfo(1 /* stride_x */, 1 /* stride_y */, 1 /* pad_x */, 1 /* pad_y */));
-
-        // in:16x16x16, out:16x16x16, Activation function: relu
         act1.configure(&out_conv1, &out_act1, ActivationLayerInfo(ActivationLayerInfo::ActivationFunction::RELU));
 
+        // in:32x32x8, out:16x16x8 (2x2 pooling), Pool type function: Max
+        pool1.configure(&out_act1, &out_pool1, PoolingLayerInfo(PoolingType::MAX, 2, data_layout, PadStrideInfo(2 /* stride_x */, 2 /* stride_y */)));
+
+        // in:16x16x8: 3x3 convolution, 16 output features maps (OFM)
+        conv2->configure(&out_pool1, &weights2, &biases2, &out_conv2, PadStrideInfo(1 /* stride_x */, 1 /* stride_y */, 1 /* pad_x */, 1 /* pad_y */));
+
+        // in:16x16x16, out:16x16x16, Activation function: relu
+        act2.configure(&out_conv2, &out_act2, ActivationLayerInfo(ActivationLayerInfo::ActivationFunction::RELU));
+
         // in:16x16x16, out:8x8x16 (2x2 pooling), Pool type function: Average
-        pool1.configure(&out_act1, &out_pool1, PoolingLayerInfo(PoolingType::AVG, 2, data_layout, PadStrideInfo(2 /* stride_x */, 2 /* stride_y */)));
+        pool1.configure(&out_act2, &out_pool2, PoolingLayerInfo(PoolingType::AVG, 2, data_layout, PadStrideInfo(2 /* stride_x */, 2 /* stride_y */)));
 
         // in:8x8x16, out:128
-        fc0->configure(&out_pool1, &weights2, &biases2, &out_fc0);
+        fc3->configure(&out_pool2, &weights3, &biases3, &out_fc3);
 
         // in:128, out:128, Activation function: relu
-        act2.configure(&out_fc0, &out_act2, ActivationLayerInfo(ActivationLayerInfo::ActivationFunction::RELU));
+        act3.configure(&out_fc3, &out_act3, ActivationLayerInfo(ActivationLayerInfo::ActivationFunction::RELU));
 
         // in:128, out:128
-        softmax->configure(&out_act2, &out_softmax);
+        softmax->configure(&out_act3, &out_softmax);
 
         /* -----------------------End: [Configure functions] */
 
@@ -182,22 +182,22 @@ public:
         memory_group0 = std::make_unique<MemoryGroup>(mm_transitions);
         memory_group1 = std::make_unique<MemoryGroup>(mm_transitions);
 
-        memory_group0->manage(&out_conv0);
-        out_conv0.allocator()->allocate();
-        memory_group1->manage(&out_act0);
-        out_act0.allocator()->allocate();
-        memory_group0->manage(&out_pool0);
-        out_pool0.allocator()->allocate();
-        memory_group1->manage(&out_conv1);
+        memory_group0->manage(&out_conv1);
         out_conv1.allocator()->allocate();
-        memory_group0->manage(&out_act1);
+        memory_group1->manage(&out_act1);
         out_act1.allocator()->allocate();
-        memory_group1->manage(&out_pool1);
+        memory_group0->manage(&out_pool1);
         out_pool1.allocator()->allocate();
-        memory_group0->manage(&out_fc0);
-        out_fc0.allocator()->allocate();
-        memory_group1->manage(&out_act2);
+        memory_group1->manage(&out_conv2);
+        out_conv2.allocator()->allocate();
+        memory_group0->manage(&out_act2);
         out_act2.allocator()->allocate();
+        memory_group1->manage(&out_pool2);
+        out_pool2.allocator()->allocate();
+        memory_group0->manage(&out_fc3);
+        out_fc3.allocator()->allocate();
+        memory_group1->manage(&out_act3);
+        out_act3.allocator()->allocate();
         memory_group0->manage(&out_softmax);
         out_softmax.allocator()->allocate();
 
@@ -207,12 +207,12 @@ public:
 
         // Now that the padding requirements are known we can allocate all tensors
         src.allocator()->allocate();
-        weights0.allocator()->allocate();
         weights1.allocator()->allocate();
         weights2.allocator()->allocate();
-        biases0.allocator()->allocate();
+        weights3.allocator()->allocate();
         biases1.allocator()->allocate();
         biases2.allocator()->allocate();
+        biases3.allocator()->allocate();
 
         /* -----------------------End: [Allocate tensors] */
 
@@ -222,8 +222,8 @@ public:
         // Populate the transitions manager. (Validity checks, memory allocations etc)
         mm_transitions->populate(allocator, 2 /* num_pools */);
 
-        npy0.fill_tensor(weights0);
-        npy1.fill_tensor(biases0);
+        // np_weights1.fill_tensor(weights1);
+        // np_biases1.fill_tensor(biases1);
 
         // output_filename = "sgemm_out.npy";
 
@@ -235,14 +235,14 @@ public:
         memory_group0->acquire();
         memory_group1->acquire();
 
-        conv0->run();
-        act0.run();
-        pool0.run();
         conv1->run();
         act1.run();
         pool1.run();
-        fc0->run();
+        conv2->run();
         act2.run();
+        pool2.run();
+        fc3->run();
+        act3.run();
         softmax->run();
 
         // Release memory
@@ -255,20 +255,20 @@ private:
     Tensor src{};
 
     // Intermediate tensors used
-    Tensor weights0{};
     Tensor weights1{};
     Tensor weights2{};
-    Tensor biases0{};
+    Tensor weights3{};
     Tensor biases1{};
     Tensor biases2{};
-    Tensor out_conv0{};
+    Tensor biases3{};
     Tensor out_conv1{};
-    Tensor out_act0{};
+    Tensor out_conv2{};
     Tensor out_act1{};
     Tensor out_act2{};
-    Tensor out_pool0{};
+    Tensor out_act3{};
     Tensor out_pool1{};
-    Tensor out_fc0{};
+    Tensor out_pool2{};
+    Tensor out_fc3{};
     Tensor out_softmax{};
 
     // Allocator
@@ -279,15 +279,15 @@ private:
     std::unique_ptr<MemoryGroup> memory_group1{};
 
     // Layers
-    std::unique_ptr<NEConvolutionLayer>    conv0{};
     std::unique_ptr<NEConvolutionLayer>    conv1{};
-    std::unique_ptr<NEFullyConnectedLayer> fc0{};
+    std::unique_ptr<NEConvolutionLayer>    conv2{};
+    std::unique_ptr<NEFullyConnectedLayer> fc3{};
     std::unique_ptr<NESoftmaxLayer>        softmax{};
-    NEPoolingLayer                         pool0{};
     NEPoolingLayer                         pool1{};
-    NEActivationLayer                      act0{};
+    NEPoolingLayer                         pool2{};
     NEActivationLayer                      act1{};
     NEActivationLayer                      act2{};
+    NEActivationLayer                      act3{};
 };
 
 /** Main program for cnn test
