@@ -85,9 +85,9 @@ public:
         biases0.allocator()->init(TensorInfo(biases_shape_conv0, 1, DataType::F32));
         out_conv0.allocator()->init(TensorInfo(out_shape_conv0, 1, DataType::F32));
 
-        npy0.open("../../assets_alexnet/cnn_data/alexnet_model/conv1_w.npy");
+        npy0.open("../assets_alexnet/cnn_data/alexnet_model/conv1_w.npy");
         npy0.init_tensor(weights0, DataType::F32);
-        npy1.open("../../assets_alexnet/cnn_data/alexnet_model/conv1_b.npy");
+        npy1.open("../assets_alexnet/cnn_data/alexnet_model/conv1_b.npy");
         npy1.init_tensor(biases0, DataType::F32);
 
         // Initialize tensor of act0
