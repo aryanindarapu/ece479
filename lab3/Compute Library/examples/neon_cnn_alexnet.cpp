@@ -71,27 +71,24 @@ public:
         src.allocator()->init(TensorInfo(src_shape, 1, DataType::F32));
 
         // Initialize tensors of conv0
-        constexpr unsigned int kernel_x_conv0 = 5;
-        constexpr unsigned int kernel_y_conv0 = 5;
+        constexpr unsigned int kernel_x_conv0 = 11;
+        constexpr unsigned int kernel_y_conv0 = 11;
         constexpr unsigned int ofm_conv0      = 8;
+
+        NPYLoader npy0;
+        NPYLoader npy1;
 
         const TensorShape weights_shape_conv0(kernel_x_conv0, kernel_y_conv0, src_shape.z(), ofm_conv0);
         const TensorShape biases_shape_conv0(weights_shape_conv0[3]);
         const TensorShape out_shape_conv0(src_shape.x(), src_shape.y(), weights_shape_conv0[3]);
-<<<<<<< HEAD
-<<<<<<< HEAD
-        weights0.allocator()->init(std::make_unique<graph_utils::NumPyBinLoader>("../assets_alexnet/cnn_data/alexnet_model/conv0_w.npy", DataLayout::NCHW));
-        weights0.allocator()->init(graph_utils::get_weights_accessor("../assets_alexnet/cnn_data/alexnet_model/conv0_w.npy"));
-=======
-
-        weights0.allocator()->init(get_weights_accessor("../assets_alexnet/cnn_data/alexnet_model/conv0_w.npy"));
->>>>>>> 7d30659 (added compute library)
-=======
-
-        weights0.allocator()->init(get_weights_accessor("../assets_alexnet/cnn_data/alexnet_model/conv0_w.npy"));
->>>>>>> 7d30659 (added compute library)
+        weights0.allocator()->init(TensorInfo(weights_shape_conv0, 1, DataType::F32));
         biases0.allocator()->init(TensorInfo(biases_shape_conv0, 1, DataType::F32));
         out_conv0.allocator()->init(TensorInfo(out_shape_conv0, 1, DataType::F32));
+
+        npy0.open("../../assets_alexnet/cnn_data/alexnet_model/conv1_w.npy");
+        npy0.init_tensor(weights0, DataType::F32);
+        npy1.open("../../assets_alexnet/cnn_data/alexnet_model/conv1_b.npy");
+        npy1.init_tensor(biases0, DataType::F32);
 
         // Initialize tensor of act0
         out_act0.allocator()->init(TensorInfo(out_shape_conv0, 1, DataType::F32));
@@ -224,6 +221,11 @@ public:
 
         // Populate the transitions manager. (Validity checks, memory allocations etc)
         mm_transitions->populate(allocator, 2 /* num_pools */);
+
+        npy0.fill_tensor(weights0);
+        npy1.fill_tensor(biases0);
+
+        // output_filename = "sgemm_out.npy";
 
         return true;
     }
