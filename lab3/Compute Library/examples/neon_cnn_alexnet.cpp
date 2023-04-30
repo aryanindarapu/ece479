@@ -71,8 +71,8 @@ public:
         src.allocator()->init(TensorInfo(src_shape, 1, DataType::F32));
 
         // Initialize tensors of conv0
-        constexpr unsigned int kernel_x_conv0 = 11;
-        constexpr unsigned int kernel_y_conv0 = 11;
+        constexpr unsigned int kernel_x_conv0 = 5;
+        constexpr unsigned int kernel_y_conv0 = 5;
         constexpr unsigned int ofm_conv0      = 8;
 
         NPYLoader npy0;
