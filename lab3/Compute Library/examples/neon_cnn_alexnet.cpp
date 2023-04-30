@@ -69,9 +69,9 @@ public:
         src.allocator()->init(TensorInfo(src_shape, 1, DataType::F32));
 
         // Initialize tensors of conv0
-        constexpr unsigned int kernel_x_conv1 = 5;
-        constexpr unsigned int kernel_y_conv1 = 5;
-        constexpr unsigned int ofm_conv1      = 8;
+        constexpr unsigned int kernel_x_conv1 = 11;
+        constexpr unsigned int kernel_y_conv1 = 11;
+        constexpr unsigned int ofm_conv1      = 96;
 
         const TensorShape weights_shape_conv1(kernel_x_conv1, kernel_y_conv1, src_shape.z(), ofm_conv1);
         const TensorShape biases_shape_conv1(weights_shape_conv1[3]);
@@ -80,6 +80,11 @@ public:
         weights1.allocator()->init(TensorInfo(weights_shape_conv1, 1, DataType::F32));
         biases1.allocator()->init(TensorInfo(biases_shape_conv1, 1, DataType::F32));
         out_conv1.allocator()->init(TensorInfo(out_shape_conv1, 1, DataType::F32));
+        
+        NPYLoader npy_weights1;
+        NPYLoader npy_biases1;
+        npy_weights1.init_tensor(weights1, DataType::F32);
+        npy_biases1.init_tensor(biases1, DataType::F32);
 
         // Initialize tensor of act0
         out_act1.allocator()->init(TensorInfo(out_shape_conv1, 1, DataType::F32));
@@ -138,13 +143,13 @@ public:
         /* [Configure functions] */
 
         // in:32x32x1: 5x5 convolution, 8 output features maps (OFM)
-        conv1->configure(&src, &weights1, &biases1, &out_conv1, PadStrideInfo(1 /* stride_x */, 1 /* stride_y */, 2 /* pad_x */, 2 /* pad_y */));
+        conv1->configure(&src, &weights1, &biases1, &out_conv1, PadStrideInfo(4 /* stride_x */, 4 /* stride_y */, 0 /* pad_x */, 0 /* pad_y */));
 
         // in:32x32x8, out:32x32x8, Activation function: relu
         act1.configure(&out_conv1, &out_act1, ActivationLayerInfo(ActivationLayerInfo::ActivationFunction::RELU));
 
         // in:32x32x8, out:16x16x8 (2x2 pooling), Pool type function: Max
-        pool1.configure(&out_act1, &out_pool1, PoolingLayerInfo(PoolingType::MAX, 2, data_layout, PadStrideInfo(2 /* stride_x */, 2 /* stride_y */)));
+        pool1.configure(&out_act1, &out_pool1, PoolingLayerInfo(PoolingType::MAX, 3, data_layout, PadStrideInfo(2 /* stride_x */, 2 /* stride_y */)));
 
         // in:16x16x8: 3x3 convolution, 16 output features maps (OFM)
         conv2->configure(&out_pool1, &weights2, &biases2, &out_conv2, PadStrideInfo(1 /* stride_x */, 1 /* stride_y */, 1 /* pad_x */, 1 /* pad_y */));
