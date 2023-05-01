@@ -456,8 +456,8 @@ private:
     NEActivationLayer                      act5{};
     NEActivationLayer                      act6{};
     NEActivationLayer                      act7{};
-    NENormalizationLayer                   norm1{};
-    NENormalizationLayer                   norm2{};
+    // NENormalizationLayer                   norm1{};
+    // NENormalizationLayer                   norm2{};
 };
 
 /** Main program for cnn test
