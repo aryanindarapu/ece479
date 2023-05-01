@@ -1,8 +1,8 @@
 # TensorFlow and tf.keras
 import os
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
+# import tensorflow as tf
+# from tensorflow import keras
+# from tensorflow.keras import layers
 import scipy
 import numpy as np
 import cv2
@@ -14,23 +14,23 @@ import time
 # inputs is height, width, channels
 # kernels is height, width, input channels, output channels (translates to: for each output channels there are weights for height, width, and channel)
 def FFTConv2D(inputs, kernels, biases, stride=1, padding=0, mode='valid', activation='none'):
-    input_h, input_w, input_c = inputs.shape
-    kernel_h, kernel_w, _, output_c= kernels.shape
+    input_c, input_h, input_w = inputs.shape
+    output_c, _, kernel_h, kernel_w  = kernels.shape
     # Output height = (Input height + padding height top + padding height bottom - kernel height) / (stride height) + 1
     output_h = (input_h + padding*2 - kernel_h) // stride + 1
     output_w = (input_w + padding*2 - kernel_w) // stride + 1
 
     # if padding
     if(padding > 0):
-        inputs = np.pad(inputs, pad_width=((padding,padding), (padding, padding), (0,0)), mode='constant', constant_values=0)
+        inputs = np.pad(inputs, pad_width=((0,0), (padding,padding), (padding, padding)), mode='constant', constant_values=0)
 
     # get the output set up
-    output = np.zeros(shape=(output_h, output_w, output_c))
+    output = np.zeros(shape=(output_c, output_h, output_w))
 
     for out_c in range(output_c):
         for in_c in range(input_c):
-            output[:,:, out_c] += scipy.signal.fftconvolve(inputs[:,:, in_c], kernels[:,:, in_c, out_c], mode=mode)[::stride, ::stride]
-        output[:,:, out_c] += biases[out_c]
+            output[out_c,:,:] += scipy.signal.fftconvolve(inputs[in_c,:,:], kernels[out_c, in_c,:,:], mode=mode)[::stride, ::stride]
+        output[out_c,:,:] += biases[out_c]
 
     # apply relu
     if(activation == 'relu'):
@@ -39,27 +39,23 @@ def FFTConv2D(inputs, kernels, biases, stride=1, padding=0, mode='valid', activa
     return output
 
 def Conv2D(inputs, kernels, biases, stride=1, padding=0, mode='valid', activation='none'):
-    input_h, input_w, input_c = inputs.shape
-    kernel_h, kernel_w, _, output_c= kernels.shape
+    input_c, input_h, input_w = inputs.shape
+    output_c, _, kernel_h, kernel_w  = kernels.shape
     # Output height = (Input height + padding height top + padding height bottom - kernel height) / (stride height) + 1
-    if(mode != 'same'):
-        output_h = (input_h + padding*2 - kernel_h) // stride + 1
-        output_w = (input_w + padding*2 - kernel_w) // stride + 1
-    else:
-        output_h = input_h // stride
-        output_w = input_w // stride
+    output_h = (input_h + padding*2 - kernel_h) // stride + 1
+    output_w = (input_w + padding*2 - kernel_w) // stride + 1
 
     # if padding
     if(padding > 0):
-        inputs = np.pad(inputs, pad_width=((padding,padding), (padding, padding), (0,0)), mode='constant', constant_values=0)
+        inputs = np.pad(inputs, pad_width=((0,0), (padding,padding), (padding, padding)), mode='constant', constant_values=0)
 
     # get the output set up
-    output = np.zeros(shape=(output_h, output_w, output_c))
+    output = np.zeros(shape=(output_c, output_h, output_w))
 
     for out_c in range(output_c):
         for in_c in range(input_c):
-            output[:,:, out_c] += scipy.signal.convolve(inputs[:,:, in_c], kernels[:,:, in_c, out_c], mode=mode, method='direct')[::stride, ::stride]
-        output[:,:, out_c] += biases[out_c]
+            output[out_c,:,:] += scipy.signal.convolve2d(inputs[in_c,:,:], kernels[out_c, in_c,:,:], mode=mode)[::stride, ::stride]
+        output[out_c,:,:] += biases[out_c]
 
     # apply relu
     if(activation == 'relu'):
@@ -68,13 +64,13 @@ def Conv2D(inputs, kernels, biases, stride=1, padding=0, mode='valid', activatio
     return output
 
 def MaxPooling(inputs, kernel_size, stride):
-    input_h, input_w, input_c = inputs.shape
+    input_c, input_h, input_w = inputs.shape
 
     # Output height = (Input height + padding height top + padding height bottom - kernel height) / (stride height) + 1
     output_h = (input_h - kernel_size) // stride + 1
     output_w = (input_w - kernel_size) // stride + 1
 
-    output = np.zeros(shape=(output_h, output_w, input_c))
+    output = np.zeros(shape=(input_c, output_h, output_w))
 
     # iterate through each item in output
     for out_h in range(output_h):
@@ -83,18 +79,16 @@ def MaxPooling(inputs, kernel_size, stride):
             h = out_h * stride
             w = out_h * stride
             # get 3d chunk of input
-            inputs_chunk = inputs[h:h + kernel_size, w:w + kernel_size, :]
-            output[out_h, out_w, :] = np.amax(inputs_chunk, axis=(0, 1))
+            inputs_chunk = inputs[:, h:h + kernel_size, w:w + kernel_size]
+            output[:, out_h, out_w] = np.amax(inputs_chunk, axis=(1, 2))
 
     return output
 
 def FullyConnected(inputs, weights, biases, activation='none'):
-    if(activation == 'relu'):
-        return np.maximum(0, inputs @ weights + biases)
-    elif(activation=='softmax'):
-        return scipy.special.softmax(inputs @ weights + biases)
+    if(mode == 'relu'):
+        return np.maximum(0, np.dot(inputs, weights) + biases)
     else:
-        return inputs @ weights + biases
+        return np.dot(inputs, weights) + biases
 
 def Flatten(inputs):
     return inputs.flatten()
@@ -131,23 +125,23 @@ im = cv2.imread('dog2.png')
 im = im.reshape((3,227,227))
 
 
-# start = time.perf_counter()
-# outFFT = FFTConv2D(im, conv1_w, conv1_b, stride=4, activation='relu')
-# print(f"FFTConv2D took {time.perf_counter()-start} seconds")
+start = time.perf_counter()
+outFFT = FFTConv2D(im, conv1_w, conv1_b, stride=4, activation='relu')
+print(f"FFTConv2D took {time.perf_counter()-start} seconds")
 
-# start = time.perf_counter()
-# outDirect = Conv2D(im, conv1_w, conv1_b, stride=4, activation='relu')
-# print(f"Conv2D took {time.perf_counter()-start} seconds")
+start = time.perf_counter()
+outDirect = Conv2D(im, conv1_w, conv1_b, stride=4, activation='relu')
+print(f"Conv2D took {time.perf_counter()-start} seconds")
 
-# avDiff = np.average(outFFT - outDirect)
-# avWeights = np.average(conv1_w)
-# minWeight = np.min(conv1_w)
+avDiff = np.average(outFFT - outDirect)
+avWeights = np.average(conv1_w)
+minWeight = np.min(conv1_w)
 
-# print(f"The average difference in output tensor is {avDiff}. This is {avDiff/avWeights}% of the average of all weights and {avDiff/minWeight}% of the smallest weight.")
+print(f"The average difference in output tensor is {avDiff}. This is {avDiff/avWeights}% of the average of all weights and {avDiff/minWeight}% of the smallest weight.")
 
 
 # building alexnet
-# out = FFTConv2D(im, conv1_w, conv1_b, stride=4, activation='relu')
+out = FFTConv2D(im, conv1_w, conv1_b, stride=4, activation='relu')
 # out = MaxPooling(out, 3, 2)
 # out = Conv2D(out, conv2_w, conv2_b, stride=1, padding=2, activation='relu')
 # out = MaxPooling(out, 3, 2)
@@ -162,59 +156,59 @@ im = im.reshape((3,227,227))
 
 # guess = np.argmax(out)
 # print(labels[guess])
-fashion_mnist = keras.datasets.fashion_mnist
-(train_val_images, train_val_labels), (test_images, test_labels) = fashion_mnist.load_data()
+# fashion_mnist = keras.datasets.fashion_mnist
+# (train_val_images, train_val_labels), (test_images, test_labels) = fashion_mnist.load_data()
 
-#preprocess the data
-split = 50000
-#split into validation and normal training
-validation_images = train_val_images[split:]
-train_images = train_val_images[:split]
+# #preprocess the data
+# split = 50000
+# #split into validation and normal training
+# validation_images = train_val_images[split:]
+# train_images = train_val_images[:split]
 
-validation_labels = train_val_labels[split:]
-train_labels = train_val_labels[:split]
+# validation_labels = train_val_labels[split:]
+# train_labels = train_val_labels[:split]
 
-train_images = train_images / 255.0
-validation_images = validation_images/255.0
-test_images = test_images / 255.0
+# train_images = train_images / 255.0
+# validation_images = validation_images/255.0
+# test_images = test_images / 255.0
 
-# reshape data
-train_images = train_images[..., np.newaxis]
-validation_images = validation_images[..., np.newaxis]
-test_images = test_images[..., np.newaxis]
+# # reshape data
+# train_images = train_images[..., np.newaxis]
+# validation_images = validation_images[..., np.newaxis]
+# test_images = test_images[..., np.newaxis]
 
 
-class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
-               'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
+# class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
+#                'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
 
-fnconv1_w = np.load("fnconv1_w.npy")
-fnconv2_w = np.load("fnconv2_w.npy")
-fnconv1_b = np.load("fnconv1_b.npy")
-fnconv2_b = np.load("fnconv2_b.npy")
-fc1_w = np.load("fc1_w.npy")
-fc1_b = np.load("fc1_b.npy")
-fc2_w = np.load("fc2_w.npy")
-fc2_b = np.load("fc2_b.npy")
-fc3_w = np.load("fc3_w.npy")
-fc3_b = np.load("fc3_b.npy")
+# fnconv1_w = np.load("fnconv1_w.npy")
+# fnconv2_w = np.load("fnconv2_w.npy")
+# fnconv1_b = np.load("fnconv1_b.npy")
+# fnconv2_b = np.load("fnconv2_b.npy")
+# fc1_w = np.load("fc1_w.npy")
+# fc1_b = np.load("fc1_b.npy")
+# fc2_w = np.load("fc2_w.npy")
+# fc2_b = np.load("fc2_b.npy")
+# fc3_w = np.load("fc3_w.npy")
+# fc3_b = np.load("fc3_b.npy")
 
-count = 0
-for i in range(100):
-    first_im = test_images[i]
+# count = 0
+# for i in range(100):
+#     first_im = test_images[i]
 
-    # building fashionnet
-    out = Conv2D(first_im, fnconv1_w, fnconv1_b, stride=1, activation='relu', mode='same')
-    out = MaxPooling(out, 2, 2)
-    out = Conv2D(out, fnconv2_w, fnconv2_b, stride=1, activation='relu', mode='valid')
-    out = MaxPooling(out, 2, 2)
-    out = Flatten(out)
-    out = FullyConnected(out, fc1_w, fc1_b, activation='relu')
-    out = FullyConnected(out, fc2_w, fc2_b, activation='relu')
-    out = FullyConnected(out, fc3_w, fc3_b, activation='softmax')
+#     # building fashionnet
+#     out = Conv2D(first_im, fnconv1_w, fnconv1_b, stride=1, activation='relu', mode='same')
+#     out = MaxPooling(out, 2, 2)
+#     out = Conv2D(out, fnconv2_w, fnconv2_b, stride=1, activation='relu', mode='valid')
+#     out = MaxPooling(out, 2, 2)
+#     out = Flatten(out)
+#     out = FullyConnected(out, fc1_w, fc1_b, activation='relu')
+#     out = FullyConnected(out, fc2_w, fc2_b, activation='relu')
+#     out = FullyConnected(out, fc3_w, fc3_b, activation='softmax')
     
-    guess = np.argmax(out)
+#     guess = np.argmax(out)
 
-    if(guess == test_labels[i]):
-        count += 1
+#     if(guess == test_labels[i]):
+#         count += 1
 
-print(count/100)
+# print(count/100)
