@@ -69,7 +69,7 @@ public:
         // Initialize src tensor
         constexpr unsigned int width_src_image  = 256;
         constexpr unsigned int height_src_image = 256;
-        constexpr unsigned int ifm_src_img      = 3;
+        constexpr unsigned int ifm_src_img      = 1;
 
         const TensorShape src_shape(width_src_image, height_src_image, ifm_src_img);
         src.allocator()->init(TensorInfo(src_shape, 1, DataType::F32));
@@ -233,7 +233,7 @@ public:
 
         conv2->configure(&out_pool1, &weights2, &biases2, &out_conv2, PadStrideInfo(1 /* stride_x */, 1 /* stride_y */, 2 /* pad_x */, 2 /* pad_y */));
         act2.configure(&out_conv2, &out_act2, ActivationLayerInfo(ActivationLayerInfo::ActivationFunction::RELU));
-        pool2.configure(&out_act2, &out_pool2, PoolingLayerInfo(PoolingType::MAX, 2, data_layout, PadStrideInfo(2 /* stride_x */, 2 /* stride_y */)));
+        pool2.configure(&out_act2, &out_pool2, PoolingLayerInfo(PoolingType::MAX, 3, data_layout, PadStrideInfo(2 /* stride_x */, 2 /* stride_y */)));
         
         conv3->configure(&out_pool2, &weights3, &biases3, &out_conv3, PadStrideInfo(1 /* stride_x */, 1 /* stride_y */, 1 /* pad_x */, 1 /* pad_y */));
         act3.configure(&out_conv3, &out_act3, ActivationLayerInfo(ActivationLayerInfo::ActivationFunction::RELU));
@@ -243,7 +243,7 @@ public:
 
         conv5->configure(&out_act4, &weights5, &biases5, &out_conv5, PadStrideInfo(1 /* stride_x */, 1 /* stride_y */, 1 /* pad_x */, 1 /* pad_y */));
         act5.configure(&out_conv5, &out_act5, ActivationLayerInfo(ActivationLayerInfo::ActivationFunction::RELU));
-        pool5.configure(&out_act2, &out_pool2, PoolingLayerInfo(PoolingType::MAX, 2, data_layout, PadStrideInfo(2 /* stride_x */, 2 /* stride_y */)));
+        pool5.configure(&out_act2, &out_pool2, PoolingLayerInfo(PoolingType::MAX, 3, data_layout, PadStrideInfo(2 /* stride_x */, 2 /* stride_y */)));
 
         fc6->configure(&out_pool5, &weights6, &biases6, &out_fc6);
         act6.configure(&out_fc6, &out_act6, ActivationLayerInfo(ActivationLayerInfo::ActivationFunction::RELU));
