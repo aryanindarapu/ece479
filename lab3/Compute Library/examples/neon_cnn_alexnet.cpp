@@ -67,8 +67,8 @@ public:
         /* [Initialize tensors] */
 
         // Initialize src tensor
-        constexpr unsigned int width_src_image  = 227;
-        constexpr unsigned int height_src_image = 227;
+        constexpr unsigned int width_src_image  = 256;
+        constexpr unsigned int height_src_image = 256;
         constexpr unsigned int ifm_src_img      = 3;
 
         const TensorShape src_shape(width_src_image, height_src_image, ifm_src_img);
