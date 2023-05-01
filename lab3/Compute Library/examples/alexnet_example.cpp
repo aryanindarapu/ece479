@@ -207,6 +207,7 @@ class AlexNetCNNTest {
             memory_group0->release();
             memory_group1->release();
         }
+
     private:
         // The src tensor should contain the input image
     Tensor src{};
@@ -259,5 +260,5 @@ class AlexNetCNNTest {
  */
 int main(int argc, char **argv) {
     AlexNetCNNTest * cnn = new AlexNetCNNTest();
-
+    cnn->do_setup();
 }
