@@ -7,6 +7,7 @@ img = cv2.imread('irongiant.png', 0)
 fft_data = []
 direct_data = []
 top_k_size = 30 + 1
+
 for kernel_size in range(3, top_k_size, 3):
     filter = np.ones(shape=(kernel_size, kernel_size)) / (kernel_size * kernel_size)
 
@@ -29,7 +30,7 @@ for kernel_size in range(3, top_k_size, 3):
     x = scipy.signal.convolve(img, filter, method='direct', mode='same')
     
     direct_data.append(time.time() - direct_start)
-    print(f"Single layer Direct Convolution ({kernel_size}x{kernel_size} kernel): Process took {direct_data[-1]} seconds.")    
+    print(f"Single layer Direct Convolution ({kernel_size}x{kernel_size} kernel): Process took {direct_data[-1]} seconds.")
 
 print(direct_data)
 print(fft_data)

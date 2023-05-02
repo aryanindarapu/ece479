@@ -33,15 +33,20 @@ model = FashionNet(test_images=test_images, test_labels=test_labels, num_images=
 
 accuracy, total_time, inf_time = model.run("direct")
 print(f"Direct Convolution Model Accuracy: {(accuracy) * 100}")
-print(f"Total Model Run Time: {total_time}")
-print(f"Average Single Image Inference Time: {inf_time}")
+print(f"Total Model Run Time: {total_time} s")
+print(f"Average Single Image Inference Time: {inf_time * 1000} ms \n")
 
-accuracy, total_time, inf_time = model.run("hybrid")
-print(f"Hybrid Convolution Model Accuracy: {(accuracy) * 100}")
-print(f"Total Model Run Time: {total_time}")
-print(f"Average Single Image Inference Time: {inf_time}")
+accuracy, total_time, inf_time = model.run("hybrid1")
+print(f"Hybrid1 Convolution Model Accuracy: {(accuracy) * 100}")
+print(f"Total Model Run Time: {total_time} s")
+print(f"Average Single Image Inference Time: {inf_time * 1000} ms \n")
+
+accuracy, total_time, inf_time = model.run("hybrid2")
+print(f"Hybrid2 Convolution Model Accuracy: {(accuracy) * 100}")
+print(f"Total Model Run Time: {total_time} s")
+print(f"Average Single Image Inference Time: {inf_time * 1000} ms \n")
 
 accuracy, total_time, inf_time = model.run("fft")
 print(f"FFT Convolution Model Accuracy: {(accuracy) * 100}")
-print(f"Total Model Run Time: {total_time}")
-print(f"Average Single Image Inference Time: {inf_time}")
+print(f"Total Model Run Time: {total_time} s")
+print(f"Average Single Image Inference Time: {inf_time * 1000} ms \n")

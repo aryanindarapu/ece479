@@ -25,8 +25,8 @@ class FashionNet:
         self.fc3_b = np.load(data_path + "fc3_b.npy")
         
     def run(self, type: str="direct") -> tuple:
-        if (type != "direct" and type != "hybrid" and type != "fft"):
-            raise Exception("Invalid model type chosen. Please choose 'direct', 'hybrid', or 'fft'.")
+        if (type != "direct" and type != "hybrid1" and type != "hybrid2" and type != "fft"):
+            raise Exception("Invalid model type chosen. Please choose 'direct', 'hybrid1', 'hybrid2', or 'fft'.")
         
         count = 0
         total_inf_time = time.time()
@@ -38,14 +38,14 @@ class FashionNet:
             single_inf_time = time.time()
             
             # building fashionnet
-            if type == "direct":
+            if type == "direct" or type == "hybrid2":
                 out = self.Conv2D("direct", first_im, self.fnconv1_w, self.fnconv1_b, stride=1, padding=0, activation='relu', mode='same')
             else:
                 out = self.Conv2D("fft", first_im, self.fnconv1_w, self.fnconv1_b, stride=1, padding=0, activation='relu', mode='same')
 
             out = self.MaxPooling(out, 2, 2)
             
-            if type == "direct" or type == "hybrid":
+            if type == "direct" or type == "hybrid1":
                 out = self.Conv2D("direct", out, self.fnconv2_w, self.fnconv2_b, stride=1, activation='relu', mode='valid')
             else: 
                 out = self.Conv2D("fft", out, self.fnconv2_w, self.fnconv2_b, stride=1, activation='relu', mode='valid')
