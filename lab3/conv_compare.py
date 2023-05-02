@@ -6,7 +6,8 @@ import time
 img = cv2.imread('irongiant.png', 0)
 fft_data = []
 direct_data = []
-for kernel_size in range(3, 31, 3):
+top_k_size = 30 + 1
+for kernel_size in range(3, top_k_size, 3):
     filter = np.ones(shape=(kernel_size, kernel_size)) / (kernel_size * kernel_size)
 
     # Run FFT Convolution
@@ -35,8 +36,8 @@ print(fft_data)
 
 import matplotlib.pyplot as plt
 
-plt.plot(list(range(3, 31, 3)), direct_data, "-co", label="Direct Convolution Time")
-plt.plot(list(range(3, 31, 3)), fft_data, "--bo", label="FFT Convolution Time")
+plt.plot(list(range(3, top_k_size, 3)), direct_data, "-co", label="Direct Convolution Time")
+plt.plot(list(range(3, top_k_size, 3)), fft_data, "--bo", label="FFT Convolution Time")
 plt.title("Direct vs FFT Convolution with Variable Kernel Sizes")
 plt.xlabel("Kernel Size")
 plt.ylabel("Layer Execution Time (s)")
