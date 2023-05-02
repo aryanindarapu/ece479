@@ -33,17 +33,17 @@ class AlexNetCNNTest {
             /* [Initialize tensors] */
 
             // Initialize src tensor
-            constexpr unsigned int width_src_image  = 32;
-            constexpr unsigned int height_src_image = 32;
+            constexpr unsigned int width_src_image  = 227;
+            constexpr unsigned int height_src_image = 227;
             constexpr unsigned int ifm_src_img      = 1;
 
             const TensorShape src_shape(width_src_image, height_src_image, ifm_src_img);
             src.allocator()->init(TensorInfo(src_shape, 1, DataType::F32));
 
             // Initialize tensors of conv0
-            constexpr unsigned int kernel_x_conv0 = 5;
-            constexpr unsigned int kernel_y_conv0 = 5;
-            constexpr unsigned int ofm_conv0      = 8;
+            constexpr unsigned int kernel_x_conv0 = 11;
+            constexpr unsigned int kernel_y_conv0 = 11;
+            constexpr unsigned int ofm_conv0      = 96;
 
             const TensorShape weights_shape_conv0(kernel_x_conv0, kernel_y_conv0, src_shape.z(), ofm_conv0);
             const TensorShape biases_shape_conv0(weights_shape_conv0[3]);
@@ -51,7 +51,7 @@ class AlexNetCNNTest {
 
             weights0.allocator()->init(TensorInfo(weights_shape_conv0, 1, DataType::F32));
             biases0.allocator()->init(TensorInfo(biases_shape_conv0, 1, DataType::F32));
-            out_conv0.allocator()->init(TensorInfo(out_shape_conv0, 1, DataType::F32));
+            out_conv0.allocator()->init(TensorInfo(out_shape_conv0, weights_shape_conv0[3], DataType::F32));
 
             // Initialize tensor of act0
             out_act0.allocator()->init(TensorInfo(out_shape_conv0, 1, DataType::F32));
@@ -110,7 +110,7 @@ class AlexNetCNNTest {
             /* [Configure functions] */
 
             // in:32x32x1: 5x5 convolution, 8 output features maps (OFM)
-            conv0->configure(&src, &weights0, &biases0, &out_conv0, PadStrideInfo(1 /* stride_x */, 1 /* stride_y */, 2 /* pad_x */, 2 /* pad_y */));
+            conv0->configure(&src, &weights0, &biases0, &out_conv0, PadStrideInfo(4 /* stride_x */, 4 /* stride_y */, 0 /* pad_x */, 0 /* pad_y */));
 
             // in:32x32x8, out:32x32x8, Activation function: relu
             act0.configure(&out_conv0, &out_act0, ActivationLayerInfo(ActivationLayerInfo::ActivationFunction::RELU));

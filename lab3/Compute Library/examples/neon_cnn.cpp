@@ -61,8 +61,8 @@ public:
         /* [Initialize tensors] */
 
         // Initialize src tensor
-        constexpr unsigned int width_src_image  = 32;
-        constexpr unsigned int height_src_image = 32;
+        constexpr unsigned int width_src_image  = 227;
+        constexpr unsigned int height_src_image = 227;
         constexpr unsigned int ifm_src_img      = 1;
 
         const TensorShape src_shape(width_src_image, height_src_image, ifm_src_img);
@@ -79,7 +79,7 @@ public:
 
         weights0.allocator()->init(TensorInfo(weights_shape_conv0, 1, DataType::F32));
         biases0.allocator()->init(TensorInfo(biases_shape_conv0, 1, DataType::F32));
-        out_conv0.allocator()->init(TensorInfo(out_shape_conv0, 1, DataType::F32));
+        // out_conv0.allocator()->init(TensorInfo(out_shape_conv0, 1, DataType::F32));
 
         // Initialize tensor of act0
         out_act0.allocator()->init(TensorInfo(out_shape_conv0, 1, DataType::F32));

@@ -10,7 +10,7 @@ except: urllib.request.urlretrieve(url, filename)
 # sample execution (requires torchvision)
 from PIL import Image
 from torchvision import transforms
-input_image = Image.open(filename)
+input_image = Image.open('./assets_alexnet/go_kart.ppm')
 preprocess = transforms.Compose([
     transforms.Resize(256),
     transforms.CenterCrop(224),
