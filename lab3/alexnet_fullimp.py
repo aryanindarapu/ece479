@@ -1,8 +1,8 @@
 # TensorFlow and tf.keras
 import os
-# import tensorflow as tf
-# from tensorflow import keras
-# from tensorflow.keras import layers
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
 import scipy
 import numpy as np
 import cv2
@@ -142,73 +142,17 @@ print(f"The average difference in output tensor is {avDiff}. This is {avDiff/avW
 
 # building alexnet
 out = FFTConv2D(im, conv1_w, conv1_b, stride=4, activation='relu')
-# out = MaxPooling(out, 3, 2)
-# out = Conv2D(out, conv2_w, conv2_b, stride=1, padding=2, activation='relu')
-# out = MaxPooling(out, 3, 2)
-# out = Conv2D(out, conv3_w, conv3_b, stride=1, padding=1, activation='relu')
-# out = Conv2D(out, conv4_w, conv4_b, stride=1, padding=1, activation='relu')
-# out = Conv2D(out, conv5_w, conv5_b, stride=1, padding=1, activation='relu')
-# out = MaxPooling(out, 3, 2)
-# out = Flatten(out)
-# out = FullyConnected(out, fc6_w, fc6_b, activation='relu')
-# out = FullyConnected(out, fc7_w, fc7_b, activation='relu')
-# out = FullyConnected(out, fc8_w, fc8_b, activation='relu')
+out = MaxPooling(out, 3, 2)
+out = Conv2D(out, conv2_w, conv2_b, stride=1, padding=2, activation='relu')
+out = MaxPooling(out, 3, 2)
+out = Conv2D(out, conv3_w, conv3_b, stride=1, padding=1, activation='relu')
+out = Conv2D(out, conv4_w, conv4_b, stride=1, padding=1, activation='relu')
+out = Conv2D(out, conv5_w, conv5_b, stride=1, padding=1, activation='relu')
+out = MaxPooling(out, 3, 2)
+out = Flatten(out)
+out = FullyConnected(out, fc6_w, fc6_b, activation='relu')
+out = FullyConnected(out, fc7_w, fc7_b, activation='relu')
+out = FullyConnected(out, fc8_w, fc8_b, activation='relu')
 
-# guess = np.argmax(out)
-# print(labels[guess])
-# fashion_mnist = keras.datasets.fashion_mnist
-# (train_val_images, train_val_labels), (test_images, test_labels) = fashion_mnist.load_data()
-
-# #preprocess the data
-# split = 50000
-# #split into validation and normal training
-# validation_images = train_val_images[split:]
-# train_images = train_val_images[:split]
-
-# validation_labels = train_val_labels[split:]
-# train_labels = train_val_labels[:split]
-
-# train_images = train_images / 255.0
-# validation_images = validation_images/255.0
-# test_images = test_images / 255.0
-
-# # reshape data
-# train_images = train_images[..., np.newaxis]
-# validation_images = validation_images[..., np.newaxis]
-# test_images = test_images[..., np.newaxis]
-
-
-# class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
-#                'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
-
-# fnconv1_w = np.load("fnconv1_w.npy")
-# fnconv2_w = np.load("fnconv2_w.npy")
-# fnconv1_b = np.load("fnconv1_b.npy")
-# fnconv2_b = np.load("fnconv2_b.npy")
-# fc1_w = np.load("fc1_w.npy")
-# fc1_b = np.load("fc1_b.npy")
-# fc2_w = np.load("fc2_w.npy")
-# fc2_b = np.load("fc2_b.npy")
-# fc3_w = np.load("fc3_w.npy")
-# fc3_b = np.load("fc3_b.npy")
-
-# count = 0
-# for i in range(100):
-#     first_im = test_images[i]
-
-#     # building fashionnet
-#     out = Conv2D(first_im, fnconv1_w, fnconv1_b, stride=1, activation='relu', mode='same')
-#     out = MaxPooling(out, 2, 2)
-#     out = Conv2D(out, fnconv2_w, fnconv2_b, stride=1, activation='relu', mode='valid')
-#     out = MaxPooling(out, 2, 2)
-#     out = Flatten(out)
-#     out = FullyConnected(out, fc1_w, fc1_b, activation='relu')
-#     out = FullyConnected(out, fc2_w, fc2_b, activation='relu')
-#     out = FullyConnected(out, fc3_w, fc3_b, activation='softmax')
-    
-#     guess = np.argmax(out)
-
-#     if(guess == test_labels[i]):
-#         count += 1
-
-# print(count/100)
+guess = np.argmax(out)
+print(labels[guess])
