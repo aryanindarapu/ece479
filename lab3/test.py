@@ -30,8 +30,7 @@ test_images = test_images[..., np.newaxis]
 num_images = 1000
 f = open("./fashionnet/labels.txt", "a")
 for i in range(num_images):
-    plt.imsave(f"./fashionnet/{i}.png", test_images[i][:, :, 0])
+    plt.imsave(f"./fashionnet/images/{i}.png", test_images[i][:, :, 0])
     f.write(f"{i} {test_labels[i]} \n")
-    break
 
 f.close()

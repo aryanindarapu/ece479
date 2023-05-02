@@ -40,7 +40,7 @@ class GraphAlexnetExample : public Example
 {
 public:
     GraphAlexnetExample()
-        : cmd_parser(), common_opts(cmd_parser), common_params(), graph(0, "AlexNet")
+        : cmd_parser(), common_opts(cmd_parser), common_params(), graph(0, "FashionNet")
     {
     }
     bool do_setup(int argc, char **argv) override
@@ -86,8 +86,8 @@ public:
               // Layer 1
               << ConvolutionLayer(
                   5U, 5U, 4U,
-                  get_weights_accessor(data_path, "/fashionnet/fc1_w.npy", weights_layout),
-                  get_weights_accessor(data_path, "/fashionnet/fc1_b.npy"),
+                  get_weights_accessor(data_path, "/fashionnet/fnconv1_w.npy", weights_layout),
+                  get_weights_accessor(data_path, "/fashionnet/fnconv1_b.npy"),
                   PadStrideInfo(1, 1, 0, 0))
               .set_name("conv1")
               << ActivationLayer(ActivationLayerInfo(ActivationLayerInfo::ActivationFunction::RELU)).set_name("relu1")
@@ -95,8 +95,8 @@ public:
               // Layer 2
               << ConvolutionLayer(
                   3U, 3U, 8U,
-                  get_weights_accessor(data_path, "/fashionnet/fc2_w.npy", weights_layout),
-                  get_weights_accessor(data_path, "/fashionnet/fc2_b.npy"),
+                  get_weights_accessor(data_path, "/fashionnet/fnconv2_w.npy", weights_layout),
+                  get_weights_accessor(data_path, "/fashionnet/fnconv2_b.npy"),
                   PadStrideInfo(1, 1, 2, 2), 2)
               .set_name("conv2")
               << ActivationLayer(ActivationLayerInfo(ActivationLayerInfo::ActivationFunction::RELU)).set_name("relu2")
